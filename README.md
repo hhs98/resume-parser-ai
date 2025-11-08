@@ -4,11 +4,12 @@ A Python command-line tool that extracts structured information from PDF resumes
 
 ## Features
 
-- Extracts comprehensive information from PDF resumes:
-  - Personal information (name, email, phone, address, LinkedIn, GitHub)
-  - Work experience (company, position, dates, description)
-  - Education (institution, degree, field, dates, GPA)
-  - Skills (technical and soft skills)
+- Extracts comprehensive information aligned with your database schema:
+  - User info (full name, DOB, gender, email, phone number)
+  - Addresses (present and permanent)
+  - Academic education (JSC/SSC/HSC/O & A levels + tertiary programs)
+  - Employment history (company details, tenure, responsibilities)
+  - Skills list
 - Supports multiple AI providers:
   - **Ollama** (default) - Free, open source models running locally
   - **OpenAI** - Proprietary API with high accuracy
@@ -53,6 +54,7 @@ ollama pull mistral
 
 ```bash
 python -m src.cli parse resume.pdf
+# Creates resume.json in the same folder as the PDF
 ```
 
 ### Parse with Specific Options
@@ -64,8 +66,8 @@ python -m src.cli parse resume.pdf --provider ollama --model llama3
 # Using OpenAI
 python -m src.cli parse resume.pdf --provider openai --model gpt-4o-mini --api-key YOUR_API_KEY
 
-# Save to file
-python -m src.cli parse resume.pdf --output result.json
+# Custom output location
+python -m src.cli parse resume.pdf --output ./results/resume.json
 ```
 
 ### Batch Processing
@@ -82,7 +84,7 @@ python -m src.cli parse-batch ./resumes/ --output ./results/
 
 - `--provider`: AI provider (`ollama` or `openai`, default: `ollama`)
 - `--model`: Model name (default: `llama3` for Ollama, `gpt-4o-mini` for OpenAI)
-- `--output` / `-o`: Output file path (default: stdout)
+- `--output` / `-o`: Output file path (default: `<input_filename>.json` next to the PDF)
 - `--format`: Output format (currently only `json`)
 - `--api-key`: OpenAI API key (overrides environment variable)
 - `--ollama-base-url`: Ollama server URL (default: `http://localhost:11434`)
@@ -93,37 +95,57 @@ The tool outputs structured JSON with the following schema:
 
 ```json
 {
-  "personal_info": {
+  "user_info": {
     "name": "John Doe",
+    "date_of_birth": "1995-04-12",
+    "gender": "male",
     "email": "john.doe@example.com",
-    "phone": "+1-234-567-8900",
-    "address": "123 Main St, City, State",
-    "linkedin": "https://linkedin.com/in/johndoe",
-    "github": "https://github.com/johndoe"
+    "phone_number": "+8801700000000"
   },
-  "work_experience": [
+  "addresses": [
     {
-      "company": "Tech Corp",
+      "type": "present",
+      "address": "123 Main Street, Dhaka",
+      "post_name": "Dhanmondi",
+      "post_code": "1209"
+    },
+    {
+      "type": "permanent",
+      "address": "Village Road, Chittagong",
+      "post_name": "Mirsharai",
+      "post_code": "4320"
+    }
+  ],
+  "academic_education": [
+    {
+      "levels": "ssc",
+      "subject": "Science",
+      "board": "Dhaka",
+      "institute": "ABC High School",
+      "passing_year": "2012",
+      "result": "GPA 5.00"
+    },
+    {
+      "levels": "bachelors",
+      "subject": "Computer Science",
+      "board": "",
+      "institute": "University of Example",
+      "passing_year": "2018",
+      "result": "CGPA 3.72"
+    }
+  ],
+  "employment": [
+    {
+      "company_name": "Tech Corp",
+      "company_type": "Software",
       "position": "Software Engineer",
-      "start_date": "2020-01",
-      "end_date": "Present",
-      "description": "Developed and maintained web applications..."
+      "joining_date": "2019-01-15",
+      "leaving_date": "",
+      "currently_working": true,
+      "responsibility": "Developed and maintained web applications."
     }
   ],
-  "education": [
-    {
-      "institution": "University of Example",
-      "degree": "Bachelor of Science",
-      "field": "Computer Science",
-      "start_date": "2016-09",
-      "end_date": "2020-05",
-      "gpa": "3.8"
-    }
-  ],
-  "skills": {
-    "technical": ["Python", "JavaScript", "React", "Node.js"],
-    "soft": ["Communication", "Leadership", "Problem Solving"]
-  }
+  "skills": ["Python", "Django", "REST APIs", "React"]
 }
 ```
 

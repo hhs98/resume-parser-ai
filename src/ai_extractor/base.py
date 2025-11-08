@@ -30,42 +30,54 @@ class AIExtractor(ABC):
         Returns:
             Formatted prompt string
         """
-        prompt = f"""Extract structured information from the following resume text. 
-Return the result as a valid JSON object with the following structure:
+        prompt = f"""Extract structured information from the following resume text.
+Return the result as a valid JSON object that matches this schema:
 
 {{
-  "personal_info": {{
-    "name": "full name",
-    "email": "email address",
-    "phone": "phone number",
-    "address": "full address if available",
-    "linkedin": "LinkedIn URL if available",
-    "github": "GitHub URL if available"
+  "user_info": {{
+    "name": "",
+    "date_of_birth": "YYYY-MM-DD or empty",
+    "gender": "male|female|other",
+    "email": "",
+    "phone_number": ""
   }},
-  "work_experience": [
+  "addresses": [
     {{
-      "company": "company name",
-      "position": "job title",
-      "start_date": "start date",
-      "end_date": "end date or 'Present'",
-      "description": "job description and responsibilities"
+      "type": "present|permanent",
+      "address": "full address line",
+      "post_name": "",
+      "post_code": ""
     }}
   ],
-  "education": [
+  "academic_education": [
     {{
-      "institution": "school/university name",
-      "degree": "degree name",
-      "field": "field of study",
-      "start_date": "start date",
-      "end_date": "graduation date",
-      "gpa": "GPA if available"
+      "levels": "jsc|ssc|hsc|o_level|a_level|bachelors|masters|phd|diploma|ca_qualified|ca_cc|cma_qualified|cma_student|acca|cs|mbbs|bds|llb|llm|other",
+      "subject": "",
+      "board": "",
+      "institute": "",
+      "passing_year": "",
+      "result": ""
     }}
   ],
-  "skills": {{
-    "technical": ["skill1", "skill2", ...],
-    "soft": ["skill1", "skill2", ...]
-  }}
+  "employment": [
+    {{
+      "company_name": "",
+      "company_type": "",
+      "position": "",
+      "joining_date": "YYYY-MM-DD or empty",
+      "leaving_date": "YYYY-MM-DD or empty",
+      "currently_working": true,
+      "responsibility": ""
+    }}
+  ],
+  "skills": ["skill one", "skill two"]
 }}
+
+Guidelines:
+- Fill missing values with empty strings.
+- Use arrays even if there is only one item.
+- Only include address types that appear in the resume.
+- Use ISO date format when possible.
 
 Resume text:
 {resume_text}
